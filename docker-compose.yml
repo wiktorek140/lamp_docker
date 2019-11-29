@@ -1,0 +1,42 @@
+version: '3'
+services:
+    apache:
+        build:
+            context: './docker/'
+        ports:
+            - "6666:80"
+        networks:
+            - front
+            - back
+        restart: unless-stopped
+        volumes:
+            - web_data:/var/www/html
+        depends_on: 
+            - mysql
+            - php
+
+    mysql:
+        image: mysql
+        networks:
+            - back
+        volumes:
+            - mysql_data:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+
+    php:
+        build:
+            context: './docker/'
+        dockerfile: Dockerfile-php
+        networks:
+            - back
+        volumes:
+            - web_data:/var/www/html
+
+volumes:
+    mysql_data: {}
+    web_data: {}
+
+networks:
+    front: {}
+    back: {}
